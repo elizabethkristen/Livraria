@@ -28,7 +28,7 @@ WORKDIR /app
 # Copia o arquivo JAR gerado durante a compilação para o diretório /app
 COPY --from=builder /build/target/*.jar /app/app.jar
 
-# Copia o JAR do driver do PostgreSQL para o diretório /app/lib
+# Copia o arquivo JAR do driver do PostgreSQL para o diretório /app/lib
 COPY postgresql-driver.jar /app/lib/postgresql-driver.jar
 
 # Adiciona o diretório /app/lib ao classpath da aplicação
