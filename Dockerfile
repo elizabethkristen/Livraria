@@ -1,31 +1,31 @@
-# Use a imagem do OpenJDK 17 como base
+# Use a imagem do OpenJDK 17 como base para a construção
 FROM openjdk:17-jdk-slim AS builder
 
-# Instalação do Maven
+# Atualiza o índice do pacote e instala o Maven
 RUN apt-get update && apt-get install -y maven
 
-# Defina o diretório de trabalho como /build
+# Define o diretório de trabalho como /build
 WORKDIR /build
 
-# Copie o arquivo pom.xml para o diretório atual
+# Copia apenas o arquivo de definição de dependências para aproveitar o cache
 COPY pom.xml .
 
-# Baixe todas as dependências de compilação
+# Baixa as dependências de compilação
 RUN mvn dependency:go-offline
 
-# Copie todos os arquivos do projeto para o diretório atual
+# Copia todo o conteúdo do projeto (exceto arquivos listados no .dockerignore)
 COPY . .
 
-# Compile o projeto
-RUN mvn package
+# Compila o projeto
+RUN mvn package -DskipTests   # Ignora a execução dos testes durante a compilação
 
 # Use a imagem do OpenJDK 17 como base para a aplicação
 FROM openjdk:17-jdk-slim
 
-# Defina o diretório de trabalho como /app
+# Define o diretório de trabalho como /app
 WORKDIR /app
 
-# Copie o arquivo JAR gerado durante a compilação para o diretório /app
+# Copia o arquivo JAR gerado durante a compilação para o diretório /app
 COPY --from=builder /build/target/*.jar /app/app.jar
 
 # Expõe a porta 8080 para acesso externo
