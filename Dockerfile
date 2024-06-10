@@ -28,14 +28,11 @@ WORKDIR /app
 # Copia o arquivo JAR gerado durante a compilação para o diretório /app
 COPY --from=builder /build/target/*.jar /app/app.jar
 
-# Copia o arquivo JAR do driver do PostgreSQL para o diretório /app/lib
-COPY postgresql-driver.jar /app/lib/postgresql-driver.jar
-
-# Adiciona o diretório /app/lib ao classpath da aplicação
-ENV CLASSPATH=/app/lib/*
+# Copia o arquivo JAR do driver do PostgreSQL para o diretório /app
+COPY postgresql-driver.jar /app/postgresql-driver.jar
 
 # Expõe a porta 8080 para acesso externo
 EXPOSE 8080
 
 # Comando para executar a aplicação quando o container for iniciado
-CMD java -jar app.jar
+CMD java -cp "app.jar:postgresql-driver.jar" your.main.ApplicationClass
